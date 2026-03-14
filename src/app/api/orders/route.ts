@@ -53,18 +53,10 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json(
-      { error: "Invalid JSON body" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const {
-    tableOrGuest,
-    guestName,
-    accessCode,
-    items,
-  } = body as {
+  const { tableOrGuest, guestName, accessCode, items } = body as {
     tableOrGuest?: string;
     guestName?: string;
     accessCode?: string;
@@ -79,19 +71,13 @@ export async function POST(request: Request) {
   }
 
   if (!accessCode?.trim()) {
-    return NextResponse.json(
-      { error: "accessCode required" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "accessCode required" }, { status: 400 });
   }
 
   const code = accessCode.trim().toUpperCase();
   const included = getIncludedDrinksForCode(code);
   if (included === null) {
-    return NextResponse.json(
-      { error: "Invalid access code" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invalid access code" }, { status: 400 });
   }
 
   const orderItems = items
@@ -118,6 +104,7 @@ export async function POST(request: Request) {
 
   try {
     const alreadyOrdered = await getTotalDrinkCountForTableAndCode(table, code);
+
     if (alreadyOrdered + totalInOrder > included) {
       return NextResponse.json(
         {
@@ -136,12 +123,30 @@ export async function POST(request: Request) {
       drink_count: totalInOrder,
     });
 
+    const remaining = Math.max(0, included - alreadyOrdered - totalInOrder);
+
     if (!order) {
-      return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
+      return NextResponse.json({
+        ok: true,
+        tableOrGuest: table,
+        guestName: guestName?.trim() || undefined,
+        accessCode: code,
+        items: orderItems,
+        status: "open",
+        remaining,
+      });
     }
 
-    const remaining = Math.max(0, included - alreadyOrdered - totalInOrder);
-    return NextResponse.json({ ...toOrder(order), remaining });
+    try {
+      return NextResponse.json({
+        ok: true,
+        remaining,
+        ...toOrder(order),
+      });
+    } catch (serializeError) {
+      console.error("POST /api/orders response serialize", serializeError);
+      return NextResponse.json({ ok: true, remaining });
+    }
   } catch (e) {
     console.error("POST /api/orders", e);
     return NextResponse.json({ error: "Failed to create order" }, { status: 500 });

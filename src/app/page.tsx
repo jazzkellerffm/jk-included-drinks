@@ -202,7 +202,10 @@ function GuestOrderPageContent() {
         }),
       });
       const data = await res.json().catch(() => ({}));
-      if (res.ok) {
+      const isSuccess =
+        res.ok || (res.status === 200 && (data?.ok === true || typeof data?.remaining === "number"));
+      if (isSuccess) {
+        setError(null);
         setSent(true);
         setCart([]);
         if (typeof data.remaining === "number") setRemaining(data.remaining);
