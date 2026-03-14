@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { DRINKS } from "@/lib/drinks";
 import { DrinkThumbnail } from "@/components/DrinkThumbnail";
@@ -45,7 +45,7 @@ function clearSession() {
   localStorage.removeItem(SESSION_KEY);
 }
 
-export default function GuestOrderPage() {
+function GuestOrderPageContent() {
   const searchParams = useSearchParams();
   const [session, setSession] = useState<Session | null>(null);
   const [showCodeEntry, setShowCodeEntry] = useState(true);
@@ -73,7 +73,6 @@ export default function GuestOrderPage() {
     []
   );
 
-  // Restore session from localStorage and fetch remaining
   useEffect(() => {
     const saved = getSession();
     if (!saved) {
@@ -180,17 +179,6 @@ export default function GuestOrderPage() {
     }
   }
 
-  function handleResetSession() {
-    clearSession();
-    setSession(null);
-    setRemaining(null);
-    setShowCodeEntry(true);
-    setShowOrderingScreen(false);
-    setCart([]);
-    setSent(false);
-    setError(null);
-  }
-
   async function submitOrder(e?: React.FormEvent) {
     e?.preventDefault();
     if (!session || remaining === null || remaining < 1) return;
@@ -229,7 +217,6 @@ export default function GuestOrderPage() {
     }
   }
 
-  // —— Code entry screen ———————————————————————————————————————————————
   if (showCodeEntry) {
     return (
       <main className="min-h-screen bg-jazz-black p-4 flex flex-col items-center justify-center">
@@ -242,7 +229,9 @@ export default function GuestOrderPage() {
           </p>
           <p className="font-sans text-jazz-cream-dim/90 text-center mb-6 text-xs max-w-xs mx-auto leading-relaxed">
             Bitte gebt die inkludierten Getränke pro Tisch gesammelt über ein Handy ein.
-            <span className="block mt-1.5 text-jazz-cream-dim/80">Please place all included drink orders for one table on one phone.</span>
+            <span className="block mt-1.5 text-jazz-cream-dim/80">
+              Please place all included drink orders for one table on one phone.
+            </span>
           </p>
           <form onSubmit={handleValidate} className="space-y-4">
             <div>
@@ -287,7 +276,6 @@ export default function GuestOrderPage() {
     );
   }
 
-  // —— Active session view (after validation, before ordering) ——————————
   if (session && !showOrderingScreen && remaining !== null && remaining !== 0) {
     const tableLabel = session.tableNumber ? `Table ${session.tableNumber}` : "Table";
     return (
@@ -311,7 +299,6 @@ export default function GuestOrderPage() {
     );
   }
 
-  // —— Success confirmation ————————————————————————————————————————————
   if (sent && session) {
     return (
       <main className="min-h-screen bg-jazz-black p-4 flex flex-col items-center justify-center">
@@ -360,7 +347,6 @@ export default function GuestOrderPage() {
     );
   }
 
-  // —— All included drinks used (no ordering left) ——————————————————————
   if (session && remaining === 0 && !sent) {
     return (
       <main className="min-h-screen bg-jazz-black p-4 flex flex-col items-center justify-center">
@@ -385,7 +371,6 @@ export default function GuestOrderPage() {
     );
   }
 
-  // —— Ordering screen (slim, mobile-first) ——————————————————————————————
   if (!session) return null;
 
   return (
@@ -525,5 +510,12 @@ export default function GuestOrderPage() {
         </section>
       )}
     </main>
+  );
+}
+export default function GuestOrderPage() {
+  return (
+    <Suspense fallback={<main className="min-h-screen bg-jazz-black" />}>
+      <GuestOrderPageContent />
+    </Suspense>
   );
 }
