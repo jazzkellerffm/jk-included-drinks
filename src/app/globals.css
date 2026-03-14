@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Local fonts: place .woff2 files in public/fonts/ so they are served at /fonts/ */
+@font-face {
+  font-family: "Ace";
+  src: url("/fonts/Ace-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Ace";
+  src: url("/fonts/Ace-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Ace";
+  src: url("/fonts/Ace-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PolySans Neutral";
+  src: url("/fonts/PolySans-Neutral.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PolySans Bulky";
+  src: url("/fonts/PolySans-Bulky.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --jazz-black: #0a0a0b;
+  --jazz-charcoal: #141416;
+  --jazz-smoke: #1c1c1f;
+  --jazz-gold: #c9a227;
+  --jazz-gold-dim: #9a7b1a;
+  --jazz-cream: #f5f0e6;
+  --jazz-cream-dim: #b8b0a0;
+  /* No serif/Times fallback: use only the loaded font names */
+  --font-ace: "Ace";
+  --font-polysans-neutral: "PolySans Neutral";
+  --font-polysans-bulky: "PolySans Bulky";
+}
+
+body {
+  background: var(--jazz-black);
+  color: var(--jazz-cream);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Touch-friendly hit areas and remove tap delay on iPad */
+@media (hover: none) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+button, a, [role="button"] {
+  touch-action: manipulation;
+}
+
+/* Inputs and placeholders: natural case, no forced uppercase */
+input, textarea {
+  text-transform: none;
+}
+input::placeholder,
+textarea::placeholder {
+  text-transform: none;
+}
