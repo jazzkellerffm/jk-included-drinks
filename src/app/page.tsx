@@ -442,6 +442,11 @@ function GuestOrderPageContent() {
                             {d.subtitle}
                           </span>
                         )}
+                        {d.flavorMarker && (
+                          <span className="font-sans text-jazz-cream-dim/80 block truncate text-xs italic">
+                            {d.flavorMarker}
+                          </span>
+                        )}
                       </div>
                       <span className="font-polysans-bulky shrink-0 text-jazz-gold text-xs">
                         Add

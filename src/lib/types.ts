@@ -3,6 +3,8 @@ export type Drink = {
   name: string;
   category: string;
   subtitle?: string;
+  /** Optional one-line flavor marker, shown in italics under subtitle */
+  flavorMarker?: string;
   image?: string;
   active?: boolean;
 };

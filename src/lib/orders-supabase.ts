@@ -1,4 +1,4 @@
-import { getSupabase } from "./supabase";
+import { getSupabase, getSupabaseServer } from "./supabase";
 
 export type OrderRow = {
   id: string;
@@ -55,7 +55,7 @@ export async function getServedOrders(): Promise<OrderRow[]> {
   return (data ?? []) as OrderRow[];
 }
 
-/** Insert a new order with status = 'open'. */
+/** Insert a new order with status = 'open'. Uses server client so writes succeed regardless of RLS. */
 export async function insertOrder(row: {
   table_number: string;
   access_code: string;
@@ -63,27 +63,32 @@ export async function insertOrder(row: {
   items: { drinkId: string; drinkName: string; quantity: number }[];
   drink_count: number;
 }): Promise<OrderRow | null> {
-  const { data, error } = await getSupabase()
+  const payload = {
+    table_number: row.table_number,
+    access_code: row.access_code,
+    guest_name: row.guest_name,
+    items: JSON.parse(JSON.stringify(row.items)) as { drinkId: string; drinkName: string; quantity: number }[],
+    drink_count: row.drink_count,
+    status: "open" as const,
+  };
+
+  const { data, error } = await getSupabaseServer()
     .from("orders")
-    .insert({
-      table_number: row.table_number,
-      access_code: row.access_code,
-      guest_name: row.guest_name,
-      items: row.items,
-      drink_count: row.drink_count,
-      status: "open",
-    })
+    .insert(payload)
     .select()
     .single();
 
-  if (error) return null;
+  if (error) {
+    console.error("insertOrder error", error.code, error.message, error.details);
+    return null;
+  }
   return data as OrderRow;
 }
 
 /** Set order to served and set completed_at. */
 export async function markOrderServed(orderId: string): Promise<OrderRow | null> {
   const now = new Date().toISOString();
-  const { data, error } = await getSupabase()
+  const { data, error } = await getSupabaseServer()
     .from("orders")
     .update({ status: "served", completed_at: now })
     .eq("id", orderId)
