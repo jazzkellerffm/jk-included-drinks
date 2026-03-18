@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { DRINKS } from "@/lib/drinks";
 import { DrinkThumbnail } from "@/components/DrinkThumbnail";
@@ -85,6 +85,23 @@ function GuestOrderPageContent() {
   const [error, setError] = useState<string | null>(null);
   const [validateError, setValidateError] = useState<string | null>(null);
   const [validating, setValidating] = useState(false);
+  const cartPanelRef = useRef<HTMLElement | null>(null);
+  const [cartPanelHeight, setCartPanelHeight] = useState(0);
+
+  useEffect(() => {
+    if (cart.length === 0) {
+      setCartPanelHeight(0);
+      return;
+    }
+    const el = cartPanelRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) setCartPanelHeight(entry.contentRect.height);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [cart.length]);
 
   const fetchRemaining = useCallback(
     async (tableNumber: string, accessCode: string) => {
@@ -409,8 +426,18 @@ function GuestOrderPageContent() {
 
   if (!session) return null;
 
+  const extraSpacing = 24;
+  const effectiveHeight = cart.length > 0 ? Math.max(cartPanelHeight, 120) : 0;
+  const bottomPadding =
+    effectiveHeight > 0
+      ? `calc(${effectiveHeight + extraSpacing}px + env(safe-area-inset-bottom, 0px))`
+      : undefined;
+
   return (
-    <main className="min-h-screen bg-jazz-black p-4 pb-36">
+    <main
+      className="min-h-screen bg-jazz-black p-4"
+      style={bottomPadding != null ? { paddingBottom: bottomPadding } : undefined}
+    >
       <div className="mx-auto max-w-sm">
         <header className="mb-4 flex items-center justify-between gap-2">
           <div>
@@ -494,7 +521,11 @@ function GuestOrderPageContent() {
       </div>
 
       {cart.length > 0 && (
-        <section className="fixed bottom-0 left-0 right-0 z-10 border-t-2 border-jazz-smoke bg-jazz-charcoal shadow-[0_-4px_16px_rgba(0,0,0,0.4)] pt-4 pb-5 px-4">
+        <section
+          ref={cartPanelRef}
+          className="fixed bottom-0 left-0 right-0 z-10 border-t-2 border-jazz-smoke bg-jazz-charcoal shadow-[0_-4px_16px_rgba(0,0,0,0.4)] pt-4 px-4"
+          style={{ paddingBottom: "calc(1.25rem + env(safe-area-inset-bottom, 0px))" }}
+        >
           <form
             onSubmit={submitOrder}
             className="mx-auto max-w-sm flex flex-col"
