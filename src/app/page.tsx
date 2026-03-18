@@ -11,16 +11,25 @@ type Session = {
   tableNumber: string;
   accessCode: string;
   includedDrinksTotal: number;
+  /** Local calendar day when this session/lock was created, YYYY-MM-DD */
+  usageDate: string;
 };
 
 type CartItem = { drinkId: string; drinkName: string; quantity: number };
+
+function getLocalDateYYYYMMDD(d = new Date()): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
 
 function getSession(): Session | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(SESSION_KEY);
     if (!raw) return null;
-    const data = JSON.parse(raw) as Session;
+    const data = JSON.parse(raw) as Partial<Session> | null;
     if (
       !data ||
       typeof data.tableNumber !== "string" ||
@@ -29,8 +38,25 @@ function getSession(): Session | null {
     ) {
       return null;
     }
-    return data;
+
+    // Defensive: legacy sessions without usageDate should not hard-lock forever.
+    const usageDate =
+      typeof data.usageDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(data.usageDate)
+        ? data.usageDate
+        : null;
+
+    const today = getLocalDateYYYYMMDD();
+    if (!usageDate || usageDate !== today) {
+      localStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+
+    return data as Session;
   } catch {
+    // Malformed JSON or unexpected structure, clear to avoid bricking old devices.
+    try {
+      localStorage.removeItem(SESSION_KEY);
+    } catch {}
     return null;
   }
 }
@@ -163,6 +189,7 @@ function GuestOrderPageContent() {
           tableNumber: tableNum,
           accessCode: code.toUpperCase(),
           includedDrinksTotal: data.includedDrinksTotal,
+          usageDate: getLocalDateYYYYMMDD(),
         };
         saveSession(sess);
         setSession(sess);
