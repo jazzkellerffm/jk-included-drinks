@@ -8,6 +8,7 @@ const ACCESS_CODES: Record<string, number> = {
   JK2: 2,
   JK3: 3,
   JK4: 4,
+  JK5: 5,
 };
 
 export function getIncludedDrinksForCode(accessCode: string): number | null {
