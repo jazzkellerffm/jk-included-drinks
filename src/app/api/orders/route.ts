@@ -8,6 +8,7 @@ import {
 } from "@/lib/orders-supabase";
 import { getDrinkById } from "@/lib/drinks";
 import { getIncludedDrinksForCode } from "@/lib/access-codes";
+import { normalizeTableId } from "@/lib/table-id";
 
 export const dynamic = "force-dynamic";
 
@@ -53,24 +54,31 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const { tableOrGuest, guestName, accessCode, items } = body as {
-    tableOrGuest?: string;
-    guestName?: string;
-    accessCode?: string;
-    items?: { drinkId: string; quantity: number }[];
-  };
+  if (!body || typeof body !== "object") {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
 
-  if (!tableOrGuest?.trim() || !items?.length) {
+  const { tableOrGuest, guestName, accessCode, items } = body as Record<
+    string,
+    unknown
+  >;
+
+  const table = normalizeTableId(tableOrGuest);
+  if (!table) {
+    return NextResponse.json({ error: "Invalid table number" }, { status: 400 });
+  }
+
+  if (!Array.isArray(items) || items.length === 0) {
     return NextResponse.json(
       { error: "tableOrGuest and items required" },
       { status: 400 }
     );
   }
 
-  if (!accessCode?.trim()) {
+  if (typeof accessCode !== "string" || !accessCode.trim()) {
     return NextResponse.json({ error: "accessCode required" }, { status: 400 });
   }
 
@@ -80,14 +88,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid access code" }, { status: 400 });
   }
 
-  const orderItems = items
-    .filter((i) => i.quantity > 0)
+  const orderItems = (items as Array<Record<string, unknown>>)
+    .filter((i) => typeof i === "object" && i && Number(i.quantity) > 0)
     .map((i) => {
-      const drink = getDrinkById(i.drinkId);
+      const drinkId = typeof i.drinkId === "string" ? i.drinkId : "";
+      const drink = getDrinkById(drinkId);
       return {
-        drinkId: i.drinkId,
-        drinkName: drink?.name ?? i.drinkId,
-        quantity: i.quantity,
+        drinkId,
+        drinkName: drink?.name ?? drinkId,
+        quantity: Number(i.quantity),
       };
     })
     .filter((i) => i.quantity > 0);
@@ -99,7 +108,6 @@ export async function POST(request: Request) {
     );
   }
 
-  const table = tableOrGuest.trim();
   const totalInOrder = orderItems.reduce((s, i) => s + i.quantity, 0);
 
   try {
@@ -118,7 +126,7 @@ export async function POST(request: Request) {
     const order = await insertOrder({
       table_number: table,
       access_code: code,
-      guest_name: guestName?.trim() || null,
+      guest_name: typeof guestName === "string" ? guestName.trim() || null : null,
       items: orderItems,
       drink_count: totalInOrder,
     });
@@ -129,7 +137,7 @@ export async function POST(request: Request) {
       return NextResponse.json({
         ok: true,
         tableOrGuest: table,
-        guestName: guestName?.trim() || undefined,
+        guestName: typeof guestName === "string" ? guestName.trim() || undefined : undefined,
         accessCode: code,
         items: orderItems,
         status: "open",

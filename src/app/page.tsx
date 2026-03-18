@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { DRINKS } from "@/lib/drinks";
 import { DrinkThumbnail } from "@/components/DrinkThumbnail";
+import { normalizeTableId } from "@/lib/table-id";
 
 const SESSION_KEY = "jk-drinks-session";
 
@@ -165,8 +166,14 @@ function GuestOrderPageContent() {
   async function handleValidate(e: React.FormEvent) {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
-    const table = (form.querySelector('[name="tableNumber"]') as HTMLInputElement)?.value?.trim();
-    const code = (form.querySelector('[name="accessCode"]') as HTMLInputElement)?.value?.trim();
+    const rawTable = (form.querySelector('[name="tableNumber"]') as HTMLInputElement)?.value;
+    const rawCode = (form.querySelector('[name="accessCode"]') as HTMLInputElement)?.value;
+    const table = normalizeTableId(rawTable ?? "");
+    const code = (rawCode ?? "").trim().toUpperCase();
+    if (!table) {
+      setValidateError("Enter a valid table number (1–29, B1–B4, D1–D2)");
+      return;
+    }
     if (!code) {
       setValidateError("Enter access code");
       return;
@@ -178,16 +185,15 @@ function GuestOrderPageContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          tableNumber: table ?? "",
+          tableNumber: table,
           accessCode: code,
         }),
       });
       const data = await res.json().catch(() => ({}));
       if (data.valid) {
-        const tableNum = ((table ?? "").trim()) || (searchParams.get("table") ?? "");
         const sess: Session = {
-          tableNumber: tableNum,
-          accessCode: code.toUpperCase(),
+          tableNumber: table,
+          accessCode: code,
           includedDrinksTotal: data.includedDrinksTotal,
           usageDate: getLocalDateYYYYMMDD(),
         };

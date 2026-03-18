@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getIncludedDrinksForCode } from "@/lib/access-codes";
 import { getTotalDrinkCountForTableAndCode } from "@/lib/orders-supabase";
+import { normalizeTableId } from "@/lib/table-id";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -13,12 +14,16 @@ export async function POST(request: Request) {
     );
   }
 
-  const { tableNumber, accessCode } = body as {
-    tableNumber?: string;
-    accessCode?: string;
-  };
+  if (!body || typeof body !== "object") {
+    return NextResponse.json(
+      { valid: false, error: "Invalid request body" },
+      { status: 400 }
+    );
+  }
 
-  if (!accessCode?.trim()) {
+  const { tableNumber, accessCode } = body as Record<string, unknown>;
+
+  if (typeof accessCode !== "string" || !accessCode.trim()) {
     return NextResponse.json(
       { valid: false, error: "Access code required" },
       { status: 400 }
@@ -33,8 +38,14 @@ export async function POST(request: Request) {
     );
   }
 
-  const table = (tableNumber ?? "").trim();
-  const code = accessCode.trim().toUpperCase();
+  const table = normalizeTableId(tableNumber);
+  if (!table) {
+    return NextResponse.json(
+      { valid: false, error: "Invalid table number" },
+      { status: 400 }
+    );
+  }
+  const code = String(accessCode).trim().toUpperCase();
 
   try {
     const alreadyOrdered = await getTotalDrinkCountForTableAndCode(table, code);

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getIncludedDrinksForCode } from "@/lib/access-codes";
 import { getTotalDrinkCountForTableAndCode } from "@/lib/orders-supabase";
+import { normalizeTableId } from "@/lib/table-id";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -22,10 +23,14 @@ export async function GET(request: Request) {
     );
   }
 
+  const table = normalizeTableId(tableNumber);
+  if (!table) {
+    return NextResponse.json({ error: "Invalid table number" }, { status: 400 });
+  }
   const code = accessCode.trim().toUpperCase();
 
   try {
-    const alreadyOrdered = await getTotalDrinkCountForTableAndCode(tableNumber, code);
+    const alreadyOrdered = await getTotalDrinkCountForTableAndCode(table, code);
     const remaining = Math.max(0, included - alreadyOrdered);
 
     return NextResponse.json({
