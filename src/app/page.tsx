@@ -278,7 +278,7 @@ function GuestOrderPageContent() {
                 name="tableNumber"
                 type="text"
                 defaultValue={searchParams.get("table") ?? ""}
-                placeholder="e.g. 3 or Table 5"
+                placeholder="e.g. 12, B1 (only numbers)"
                 className="font-sans w-full min-h-touch-lg px-4 rounded-xl bg-jazz-charcoal border border-jazz-smoke text-jazz-cream placeholder-jazz-cream-dim focus:border-jazz-gold focus:outline-none text-lg"
               />
             </div>
