@@ -19,12 +19,15 @@ export async function getTotalDrinkCountForTableAndCode(
 ): Promise<number> {
   const table = (tableNumber ?? "").trim() || "_";
   const code = (accessCode ?? "").trim().toUpperCase();
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
 
   const { data, error } = await getSupabase()
     .from("orders")
     .select("drink_count")
     .eq("table_number", table)
-    .eq("access_code", code);
+    .eq("access_code", code)
+    .gte("created_at", startOfToday.toISOString());
 
   if (error) return 0;
   const total = (data ?? []).reduce((s, r) => s + (r.drink_count ?? 0), 0);
