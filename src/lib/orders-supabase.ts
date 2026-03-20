@@ -12,15 +12,21 @@ export type OrderRow = {
   completed_at: string | null;
 };
 
-/** Sum of drink_count for this table_number + access_code (all orders). */
+/** Sum of drink_count for this table_number + access_code (current day only). */
 export async function getTotalDrinkCountForTableAndCode(
   tableNumber: string,
   accessCode: string
 ): Promise<number> {
   const table = (tableNumber ?? "").trim() || "_";
   const code = (accessCode ?? "").trim().toUpperCase();
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
+
+  const now = new Date();
+  const startOfToday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    0, 0, 0, 0
+  );
 
   const { data, error } = await getSupabase()
     .from("orders")

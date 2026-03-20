@@ -33,7 +33,7 @@ export const DRINKS: Drink[] = [
   { id: "the-artist-non-alc", name: "The Artist non-alc", category: "Mocktails", subtitle: "Alcohol-free", image: "/images/the-artist-non.png", active: true },
   { id: "free-jazzy-fizz", name: "Free Jazzy Fizz", category: "Mocktails", subtitle: "Citrus, herbal notes, gentle sparkle, refreshing character", flavorMarker: "crisp & fresh", image: "/images/free-jazzy-fizz.png", active: true },
   // WINE & BEER
-  { id: "1884-blanc", name: "1884 Blanc", category: "Wine & Beer", subtitle: "French beer", image: "/images/corona.png", active: true },
+  { id: "1664-blanc", name: "1664 Blanc", category: "Wine & Beer", subtitle: "French beer", image: "/images/1664-beer.png", active: true },
   { id: "tegernseer-hell", name: "Tegernseer Hell", category: "Wine & Beer", subtitle: "Helles aus Bayern", image: "/images/tegernseer.png", active: true },
   { id: "lugana", name: "Lugana", category: "Wine & Beer", subtitle: "White wine", image: "/images/lugana-glass.png", active: true },
   { id: "sauvignon-blanc", name: "Sauvignon Blanc", category: "Wine & Beer", subtitle: "White wine", image: "/images/sauvignon-glass.png", active: true },
