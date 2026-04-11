@@ -33,7 +33,7 @@ export const DRINKS: Drink[] = [
   { id: "crafted-lemonade", name: "Crafted Lemonade", category: "Mocktails", subtitle: "Fresh lemon, light sweetness, sparkling finish", flavorMarker: "crisp & fresh", image: "/images/crafted-lemonade.png", active: true },
   { id: "dubai-mule", name: "Dubai Mule", category: "Mocktails", subtitle: "Ginger beer, lime, fresh spice", flavorMarker: "subtle spice", image: "/images/dubai-mule.png", active: true },
   { id: "the-artist-non-alc", name: "The Artist non-alc", category: "Mocktails", subtitle: "Non-alc purple gin, tonka, vanilla, lemon foam", flavorMarker: "subtle floral notes", image: "/images/the-artist-non.png", active: true },
-  { id: "free-jazzy-fizz", name: "Free Jazzy Fizz", category: "Mocktails", subtitle: "Citrus, herbal notes, gentle sparkle", flavorMarker: "crisp & fresh", image: "/images/free-jazzy-fizz.png", active: true },
+  { id: "free-jazzy-fizz", name: "Free Jazzy Fizz", category: "Mocktails", subtitle: "Citrus, herbal notes, gentle sparkle", flavorMarker: "crisp & fresh", image: "/images/free-jazzy-fizz.png", active: false },
 
   // WINE & BEER
   { id: "1664-blanc", name: "1664 Blanc", category: "Wine & Beer", subtitle: "French wheat beer", image: "/images/1664-beer.png", active: true },
