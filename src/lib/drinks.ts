@@ -37,6 +37,7 @@ export const DRINKS: Drink[] = [
 
   // WINE & BEER
   { id: "1664-blanc", name: "1664 Blanc", category: "Wine & Beer", subtitle: "French wheat beer", image: "/images/1664-beer.png", active: true },
+  { id: "birra-moretti", name: "Birra Moretti", category: "Wine & Beer", subtitle: "Premium italian Lager", image: "/images/birra-moretti.png", active: true },
   { id: "tegernseer-hell", name: "Tegernseer Hell", category: "Wine & Beer", subtitle: "Traditional Bavarian lager", image: "/images/tegernseer.png", active: true },
   { id: "lugana", name: "Lugana", category: "Wine & Beer", subtitle: "White wine", image: "/images/lugana-glass.png", active: true },
   { id: "sauvignon-blanc", name: "Sauvignon Blanc", category: "Wine & Beer", subtitle: "White wine", image: "/images/sauvignon-glass.png", active: true },
