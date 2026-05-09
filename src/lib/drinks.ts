@@ -27,6 +27,7 @@ export const DRINKS: Drink[] = [
   { id: "pisco-sour", name: "Pisco Sour", category: "Classics", subtitle: "Pisco, fresh lime, sugar, silky foam", flavorMarker: "rich and smooth", image: "/images/pisco-sour.png", active: true },
   { id: "whiskey-sour", name: "Whiskey Sour", category: "Classics", subtitle: "Bourbon, fresh lemon, sugar, silky foam", flavorMarker: "rich and smooth", image: "/images/whiskey-sour.png", active: true },
   { id: "siberian-sour", name: "Siberian Sour", category: "Classics", subtitle: "Vodka, lemon, grapefruit bitters, silky foam", flavorMarker: "crisp & fresh", image: "/images/siberian-sour.png", active: true },
+  { id: "cuban-iced-tea", name: "Cuban Iced Tea", category: "Classics", subtitle: "Dark rum, fruity iced tea, lime juice", flavorMarker: "subtle floral notes", image: "/images/cuban-iced-tea.png", active: true },
 
   // MOCKTAILS
   { id: "purple-no-rain", name: "Purple No Rain", category: "Mocktails", subtitle: "Non-alc purple gin, tonka, vanilla", flavorMarker: "subtle floral notes", image: "/images/purple-no-rain.png", active: true },
@@ -34,9 +35,10 @@ export const DRINKS: Drink[] = [
   { id: "dubai-mule", name: "Dubai Mule", category: "Mocktails", subtitle: "Ginger beer, lime, fresh spice", flavorMarker: "subtle spice", image: "/images/dubai-mule.png", active: true },
   { id: "the-artist-non-alc", name: "The Artist non-alc", category: "Mocktails", subtitle: "Non-alc purple gin, tonka, vanilla, lemon foam", flavorMarker: "subtle floral notes", image: "/images/the-artist-non.png", active: true },
   { id: "free-jazzy-fizz", name: "Free Jazzy Fizz", category: "Mocktails", subtitle: "Citrus, herbal notes, gentle sparkle", flavorMarker: "crisp & fresh", image: "/images/free-jazzy-fizz.png", active: true },
+  { id: "iced-tea", name: "Iced Tea", category: "Mocktails", subtitle: "Fruity iced tea, lime juice", flavorMarker: "subtle floral notes", image: "/images/iced-tea.png", active: true },
 
   // WINE & BEER
-  { id: "1664-blanc", name: "1664 Blanc", category: "Wine & Beer", subtitle: "French wheat beer", image: "/images/1664-beer.png", active: true },
+  { id: "1664-blanc", name: "1664 Blanc", category: "Wine & Beer", subtitle: "French wheat beer", image: "/images/1664-beer.png", active: false },
   { id: "birra-moretti", name: "Birra Moretti", category: "Wine & Beer", subtitle: "Premium italian Lager", image: "/images/birra-moretti.png", active: true },
   { id: "tegernseer-hell", name: "Tegernseer Hell", category: "Wine & Beer", subtitle: "Traditional Bavarian lager", image: "/images/tegernseer.png", active: true },
   { id: "lugana", name: "Lugana", category: "Wine & Beer", subtitle: "White wine", image: "/images/lugana-glass.png", active: true },
