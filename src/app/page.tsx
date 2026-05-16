@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { DRINKS } from "@/lib/drinks";
 import { DrinkThumbnail } from "@/components/DrinkThumbnail";
 import { normalizeTableId } from "@/lib/table-id";
+import { isValidSessionId } from "@/lib/session-id";
 
 const SESSION_KEY = "jk-drinks-session";
 
@@ -14,6 +15,8 @@ type Session = {
   includedDrinksTotal: number;
   /** Local calendar day when this session/lock was created, YYYY-MM-DD */
   usageDate: string;
+  /** Per-redemption id; included drinks are counted per session, not per table */
+  sessionId: string;
 };
 
 type CartItem = { drinkId: string; drinkName: string; quantity: number };
@@ -48,6 +51,11 @@ function getSession(): Session | null {
 
     const today = getLocalDateYYYYMMDD();
     if (!usageDate || usageDate !== today) {
+      localStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+
+    if (!isValidSessionId(data.sessionId)) {
       localStorage.removeItem(SESSION_KEY);
       return null;
     }
@@ -104,10 +112,11 @@ function GuestOrderPageContent() {
   }, [cart.length]);
 
   const fetchRemaining = useCallback(
-    async (tableNumber: string, accessCode: string) => {
+    async (tableNumber: string, accessCode: string, sessionId: string) => {
       const params = new URLSearchParams({
         accessCode,
         tableNumber: tableNumber || "_",
+        sessionId,
       });
       const res = await fetch(`/api/access/remaining?${params}`);
       if (!res.ok) return null;
@@ -130,7 +139,7 @@ function GuestOrderPageContent() {
     setShowCodeEntry(false);
     setShowOrderingScreen(false);
     setRemaining(null);
-    fetchRemaining(saved.tableNumber, saved.accessCode).then((r) => {
+    fetchRemaining(saved.tableNumber, saved.accessCode, saved.sessionId).then((r) => {
       if (r === null) {
         clearSession();
         setSession(null);
@@ -198,12 +207,14 @@ function GuestOrderPageContent() {
     setValidateError(null);
     setValidating(true);
     try {
+      const sessionId = crypto.randomUUID();
       const res = await fetch("/api/access/validate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tableNumber: table,
           accessCode: code,
+          sessionId,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -213,6 +224,7 @@ function GuestOrderPageContent() {
           accessCode: code,
           includedDrinksTotal: data.includedDrinksTotal,
           usageDate: getLocalDateYYYYMMDD(),
+          sessionId,
         };
         saveSession(sess);
         setSession(sess);
@@ -243,6 +255,7 @@ function GuestOrderPageContent() {
           tableOrGuest: session.tableNumber || "Table",
           ...(guestName.trim() && { guestName: guestName.trim() }),
           accessCode: session.accessCode,
+          sessionId: session.sessionId,
           items: cart.map((c) => ({
             drinkId: c.drinkId,
             drinkName: c.drinkName,

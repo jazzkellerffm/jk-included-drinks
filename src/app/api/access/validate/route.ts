@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { getIncludedDrinksForCode } from "@/lib/access-codes";
-import { getTotalDrinkCountForTableAndCode } from "@/lib/orders-supabase";
+import { getTotalDrinkCountForSession } from "@/lib/orders-supabase";
 import { normalizeTableId } from "@/lib/table-id";
+import { isValidSessionId } from "@/lib/session-id";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { tableNumber, accessCode } = body as Record<string, unknown>;
+  const { tableNumber, accessCode, sessionId } = body as Record<string, unknown>;
 
   if (typeof accessCode !== "string" || !accessCode.trim()) {
     return NextResponse.json(
@@ -45,10 +46,16 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
+  if (!isValidSessionId(sessionId)) {
+    return NextResponse.json(
+      { valid: false, error: "Invalid session" },
+      { status: 400 }
+    );
+  }
   const code = String(accessCode).trim().toUpperCase();
 
   try {
-    const alreadyOrdered = await getTotalDrinkCountForTableAndCode(table, code);
+    const alreadyOrdered = await getTotalDrinkCountForSession(sessionId, code);
     const remaining = Math.max(0, included - alreadyOrdered);
 
     return NextResponse.json({

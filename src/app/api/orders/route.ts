@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import {
   getOpenOrders,
   getServedOrders,
-  getTotalDrinkCountForTableAndCode,
+  getTotalDrinkCountForSession,
   insertOrder,
   type OrderRow,
 } from "@/lib/orders-supabase";
 import { getDrinkById } from "@/lib/drinks";
 import { getIncludedDrinksForCode } from "@/lib/access-codes";
 import { normalizeTableId } from "@/lib/table-id";
+import { isValidSessionId } from "@/lib/session-id";
 
 export const dynamic = "force-dynamic";
 
@@ -61,7 +62,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const { tableOrGuest, guestName, accessCode, items } = body as Record<
+  const { tableOrGuest, guestName, accessCode, items, sessionId } = body as Record<
     string,
     unknown
   >;
@@ -80,6 +81,10 @@ export async function POST(request: Request) {
 
   if (typeof accessCode !== "string" || !accessCode.trim()) {
     return NextResponse.json({ error: "accessCode required" }, { status: 400 });
+  }
+
+  if (!isValidSessionId(sessionId)) {
+    return NextResponse.json({ error: "Invalid session" }, { status: 400 });
   }
 
   const code = accessCode.trim().toUpperCase();
@@ -111,7 +116,7 @@ export async function POST(request: Request) {
   const totalInOrder = orderItems.reduce((s, i) => s + i.quantity, 0);
 
   try {
-    const alreadyOrdered = await getTotalDrinkCountForTableAndCode(table, code);
+    const alreadyOrdered = await getTotalDrinkCountForSession(sessionId, code);
 
     if (alreadyOrdered + totalInOrder > included) {
       return NextResponse.json(
@@ -126,6 +131,7 @@ export async function POST(request: Request) {
     const order = await insertOrder({
       table_number: table,
       access_code: code,
+      session_id: sessionId,
       guest_name: typeof guestName === "string" ? guestName.trim() || null : null,
       items: orderItems,
       drink_count: totalInOrder,

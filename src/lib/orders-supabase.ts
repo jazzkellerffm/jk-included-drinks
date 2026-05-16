@@ -4,6 +4,8 @@ export type OrderRow = {
   id: string;
   table_number: string;
   access_code: string;
+  /** Per-device redemption id; null on legacy rows before session_id existed */
+  session_id: string | null;
   guest_name: string | null;
   items: { drinkId: string; drinkName: string; quantity: number }[];
   drink_count: number;
@@ -12,13 +14,14 @@ export type OrderRow = {
   completed_at: string | null;
 };
 
-/** Sum of drink_count for this table_number + access_code (current day only). */
-export async function getTotalDrinkCountForTableAndCode(
-  tableNumber: string,
+/** Sum of drink_count for this session_id + access_code (current day only). */
+export async function getTotalDrinkCountForSession(
+  sessionId: string,
   accessCode: string
 ): Promise<number> {
-  const table = (tableNumber ?? "").trim() || "_";
+  const sid = (sessionId ?? "").trim();
   const code = (accessCode ?? "").trim().toUpperCase();
+  if (!sid) return 0;
 
   const now = new Date();
   const startOfToday = new Date(
@@ -31,7 +34,7 @@ export async function getTotalDrinkCountForTableAndCode(
   const { data, error } = await getSupabase()
     .from("orders")
     .select("drink_count")
-    .eq("table_number", table)
+    .eq("session_id", sid)
     .eq("access_code", code)
     .gte("created_at", startOfToday.toISOString());
 
@@ -68,6 +71,7 @@ export async function getServedOrders(): Promise<OrderRow[]> {
 export async function insertOrder(row: {
   table_number: string;
   access_code: string;
+  session_id: string;
   guest_name: string | null;
   items: { drinkId: string; drinkName: string; quantity: number }[];
   drink_count: number;
@@ -75,6 +79,7 @@ export async function insertOrder(row: {
   const payload = {
     table_number: row.table_number,
     access_code: row.access_code,
+    session_id: row.session_id,
     guest_name: row.guest_name,
     items: JSON.parse(JSON.stringify(row.items)) as { drinkId: string; drinkName: string; quantity: number }[],
     drink_count: row.drink_count,
