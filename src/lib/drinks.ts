@@ -17,6 +17,7 @@ export const DRINKS: Drink[] = [
   { id: "the-muse", name: "The Muse", category: "Signatures", subtitle: "Berry-infused vodka, citrus, lemon foam", flavorMarker: "crisp & fresh", image: "/images/the-muse.png", active: true },
   { id: "purple-negroni", name: "Purple Negroni", category: "Signatures", subtitle: "Gin, aperitivo, vermouth, floral bitterness", flavorMarker: "light bitterness", image: "/images/purple-negroni.png", active: true },
   { id: "pina-margarita", name: "Piña Margarita", category: "Signatures", subtitle: "Tequila, pineapple, lime, tropical freshness", flavorMarker: "crisp & fresh", image: "/images/margarita.png", active: true },
+  { id: "velvet-martini", name: "Velvet Martini", category: "Signatures", subtitle: "Vanilla vodka, passion fruit, vanilla foam", flavorMarker: "silky & aromatic", image: "/velvet-martini.png", active: true },
 
   // CLASSICS
   { id: "caipirinha", name: "OG Caipirinha", category: "Classics", subtitle: "Cachaça, fresh lime, cane sugar", flavorMarker: "crisp & fresh", image: "/images/caipirinha.png", active: true },
