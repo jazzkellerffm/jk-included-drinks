@@ -6,9 +6,9 @@ import type { Drink } from "./types";
  */
 export const DRINKS: Drink[] = [
   // SIGNATURES
-  { id: "basil-bliss", name: "Basil Bliss", category: "Signatures", subtitle: "Gin, fresh basil, lime, gentle sweetness", flavorMarker: "green & aromatic", image: "/images/basil-bliss.png", active: true },
+  { id: "basil-bliss", name: "Basil Bliss", category: "Signatures", subtitle: "Gin, fresh basil, lime, gentle sweetness", flavorMarker: "green & aromatic", image: "/images/basil-bliss.png", active: false },
   { id: "purple-rain", name: "Purple Rain", category: "Signatures", subtitle: "Purple gin, tonka, vanilla, citrus", flavorMarker: "subtle floral notes", image: "/images/purple-rain.png", active: true },
-  { id: "basil-gintonic", name: "Basil infused Gin Tonic", category: "Signatures", subtitle: "Gin, basil infusion, tonic, clean finish", flavorMarker: "green & aromatic", image: "/images/basil-gintonic.png", active: true },
+  { id: "basil-gintonic", name: "Basil infused Gin Tonic", category: "Signatures", subtitle: "Gin, basil infusion, tonic, clean finish", flavorMarker: "green & aromatic", image: "/images/basil-gintonic.png", active: false },
   { id: "ginger-highball", name: "Ginger Highball", category: "Signatures", subtitle: "Whiskey, ginger soda, citrus oils, light spice", flavorMarker: "subtle spice", image: "/images/ginger-highball.png", active: true },
   { id: "imperial-aviation", name: "Imperial Aviation", category: "Signatures", subtitle: "Purple gin, maraschino, violet bitters, citrus", flavorMarker: "subtle floral notes", image: "/images/imperial-aviation.png", active: true },
   { id: "frankfurt-sour", name: "Frankfurt Sour", category: "Signatures", subtitle: "Whiskey, fresh lemon, sugar, silky foam", flavorMarker: "rich and smooth", image: "/images/frankfurt-sour.png", active: true },
@@ -29,6 +29,8 @@ export const DRINKS: Drink[] = [
   { id: "whiskey-sour", name: "Whiskey Sour", category: "Classics", subtitle: "Bourbon, fresh lemon, sugar, silky foam", flavorMarker: "rich and smooth", image: "/images/whiskey-sour.png", active: true },
   { id: "siberian-sour", name: "Siberian Sour", category: "Classics", subtitle: "Vodka, lemon, grapefruit bitters, silky foam", flavorMarker: "crisp & fresh", image: "/images/siberian-sour.png", active: true },
   { id: "cuban-iced-tea", name: "Cuban Iced Tea", category: "Classics", subtitle: "Dark rum, fruity iced tea, lime juice", flavorMarker: "subtle floral notes", image: "/images/cuban-iced-tea.png", active: true },
+  { id: "aperol-spritz", name: "Aperol Spritz", category: "Classics", subtitle: "Aperol, Crémant, sparkling water", flavorMarker: "light & refreshing", image: "/images/aperol-spritz.png", active: true },
+  { id: "paloma", name: "Paloma", category: "Classics", subtitle: "Tequila, lime, pink grapefruit soda", flavorMarker: "crisp & citrusy", image: "/images/paloma.png", active: true },
 
   // MOCKTAILS
   { id: "purple-no-rain", name: "Purple No Rain", category: "Mocktails", subtitle: "Non-alc purple gin, tonka, vanilla", flavorMarker: "subtle floral notes", image: "/images/purple-no-rain.png", active: true },
